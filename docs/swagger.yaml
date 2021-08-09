@@ -1,0 +1,129 @@
+basePath: /
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is Launchpad service server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Launchpad Service API
+  version: "1.0"
+paths:
+  /launchpad/create:
+    post:
+      parameters:
+      - description: model-value
+        in: body
+        name: model-value
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: Create new token
+      tags:
+      - launchpad
+  /launchpad/deactivate-token/{id}:
+    put:
+      parameters:
+      - description: token-id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: deactivate active token
+      tags:
+      - launchpad
+  /launchpad/get:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: Get activated token
+      tags:
+      - launchpad
+  /launchpad/get-by-id/{id}:
+    get:
+      parameters:
+      - description: token-id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: Get token by id
+      tags:
+      - launchpad
+  /launchpad/update/{id}:
+    put:
+      parameters:
+      - description: token-id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: model_value
+        in: body
+        name: model_value
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: Update token
+      tags:
+      - launchpad
+swagger: "2.0"

@@ -1,0 +1,171 @@
+package token
+
+import (
+	"errors"
+	"github.com/google/uuid"
+	"launchpad_service/model"
+	"time"
+)
+
+type Token struct {
+	Id uuid.UUID `json:"id"`
+	Name string `json:"name"`
+	SymbolToken string `json:"symbol_token"`
+	Icon string `json:"icon"`
+	TotalSupply int `json:"total_supply"`
+	Description string `json:"description,omitempty"`
+	Website string `json:"website,omitempty"`
+	Twitter string `json:"twitter,omitempty"`
+	Facebook string `json:"facebook,omitempty"`
+	Telegram string `json:"telegram,omitempty"`
+	Reddit string `json:"reddit,omitempty"`
+	CoinMarketCap string `json:"coin_market_cap,omitempty"`
+	CoinGecko string `json:"coin_gecko,omitempty"`
+	Address string `json:"address"`
+	ChainId int `json:"chain_id,omitempty"`
+	ChainName string `json:"chain_name,omitempty"`
+	Locked bool `json:"locked,omitempty"`
+	LaunchPadAmount int `json:"launch_pad_amount,omitempty"`
+	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
+	MaxBuy float64 `json:"max_buy,omitempty"`
+	MinBuy float64 `json:"min_buy,omitempty"`
+	TimeStart int64 `json:"time_start,omitempty"`
+	TimeEnd int64	`json:"time_end,omitempty"`
+	ImageBanner string `json:"image_banner,omitempty"`
+	IsDeleted bool `json:"-"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+}
+
+func Get() ([]Token, error) {
+	var tokens []Token
+	db, err := model.ConnectToPostgres()
+	if err != nil {
+		return nil, err
+	}
+
+	if err = db.Where("is_deleted = ?", false).Find(&tokens).Error; err != nil {
+		return nil, err
+	}
+
+	sqlDB, _ := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
+		return tokens, err
+	}
+
+	return tokens, nil
+}
+
+func GetById(id string) (Token, error) {
+	var token Token
+	db, err := model.ConnectToPostgres()
+	if err != nil {
+		return token, err
+	}
+
+	result := db.First(&token, "id = ?", id)
+	if result.Error != nil {
+		return token, result.Error
+	}
+
+	sqlDB, _ := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
+		return token, err
+	}
+
+	return token, nil
+}
+
+func Create(token Token) (Token, error) {
+	db, err := model.ConnectToPostgres()
+	if err != nil {
+		return token, err
+	}
+
+	isExisted, err := checkIfNameOrSymbolTokenExists(token)
+	if err != nil {
+		return token, err
+	}
+
+	if isExisted == true {
+		return token, errors.New("token name or symbol token is already existed")
+	}
+
+	token.Id = uuid.New()
+	token.CreatedAt = time.Now()
+	token.UpdatedAt = time.Now()
+
+	result := db.Create(&token)
+	if result.Error != nil {
+		return token, result.Error
+	}
+
+	sqlDB, _ := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
+		return token, err
+	}
+
+	return token, nil
+}
+
+func (token Token)Update() (Token, error){
+	db, err := model.ConnectToPostgres()
+	if err != nil {
+		return token, err
+	}
+
+	result := db.Model(&token).Updates(token)
+	if result.Error != nil {
+		return token, err
+	}
+
+	sqlDB, _ := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
+		return token, err
+	}
+
+	return token, nil
+}
+
+func (token Token)DeactivateToken() (bool, error) {
+	db, err := model.ConnectToPostgres()
+	if err != nil {
+		return false, err
+	}
+	result := db.Model(&token).Update("is_deleted", true)
+	if result.Error != nil {
+		return false, err
+	}
+
+	sqlDB, _ := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func checkIfNameOrSymbolTokenExists(token Token) (bool, error) {
+	db, err := model.ConnectToPostgres()
+	var tokens []Token
+	if err != nil {
+		return true, err
+	}
+	result := db.Where("is_deleted = false AND ( name = ? OR symbol_token = ?)", token.Name, token.SymbolToken).Find(&tokens)
+	if result.RowsAffected != 0 {
+		return true, nil
+	}
+
+	sqlDB, _ := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
+		return true, err
+	}
+
+	return false, nil
+}
