@@ -33,5 +33,5 @@ func main() {
 	}
 
 	server.GET("/swagger/*", echoSwagger.WrapHandler)
-	server.Logger.Fatal(server.Start(":8080"))
+	server.Logger.Fatal(server.Start(":8081"))
 }
