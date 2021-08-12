@@ -22,7 +22,7 @@ type Token struct {
 	CoinMarketCap string `json:"coin_market_cap,omitempty"`
 	CoinGecko string `json:"coin_gecko,omitempty"`
 	Address string `json:"address"`
-	ChainId int `json:"chain_id,omitempty"`
+	ChainId string `json:"chain_id,omitempty"`
 	ChainName string `json:"chain_name,omitempty"`
 	Locked bool `json:"locked,omitempty"`
 	LaunchPadAmount int `json:"launch_pad_amount,omitempty"`
@@ -33,8 +33,8 @@ type Token struct {
 	TimeEnd int64	`json:"time_end,omitempty"`
 	ImageBanner string `json:"image_banner,omitempty"`
 	IsDeleted bool `json:"-"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func Get() ([]Token, error) {
