@@ -12,7 +12,7 @@ type Token struct {
 	Name string `json:"name"`
 	SymbolToken string `json:"symbol_token"`
 	Icon string `json:"icon"`
-	TotalSupply int `json:"total_supply"`
+	TotalSupply int64 `json:"total_supply"`
 	Description string `json:"description,omitempty"`
 	Website string `json:"website,omitempty"`
 	Twitter string `json:"twitter,omitempty"`
@@ -24,11 +24,12 @@ type Token struct {
 	Address string `json:"address"`
 	ChainId string `json:"chain_id,omitempty"`
 	ChainName string `json:"chain_name,omitempty"`
-	Locked bool `json:"locked,omitempty"`
-	LaunchPadAmount int `json:"launch_pad_amount,omitempty"`
+	Locked bool `json:"locked"`
+	BaseCrypto string `json:"base_crypto"`
+	LaunchPadAmount int64 `json:"launch_pad_amount,omitempty"`
 	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
-	MaxBuy float64 `json:"max_buy,omitempty"`
-	MinBuy float64 `json:"min_buy,omitempty"`
+	MaxBuy int64 `json:"max_buy,omitempty"`
+	MinBuy int64 `json:"min_buy,omitempty"`
 	TimeStart int64 `json:"time_start,omitempty"`
 	TimeEnd int64	`json:"time_end,omitempty"`
 	ImageBanner string `json:"image_banner,omitempty"`
