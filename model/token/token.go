@@ -25,7 +25,8 @@ type Token struct {
 	ChainId string `json:"chain_id,omitempty"`
 	ChainName string `json:"chain_name,omitempty"`
 	Locked bool `json:"locked"`
-	BaseCrypto string `json:"base_crypto"`
+	BaseCrypto string `json:"base_crypto,omitempty"`
+	Decimal int64 `json:"decimal,omitempty"`
 	LaunchPadAmount int64 `json:"launch_pad_amount,omitempty"`
 	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
 	MaxBuy int64 `json:"max_buy,omitempty"`
