@@ -27,7 +27,7 @@ type Token struct {
 	Locked bool `json:"locked"`
 	BaseCrypto string `json:"base_crypto,omitempty"`
 	Decimal int64 `json:"decimal,omitempty"`
-	DecimalBase int64 `json:"decimal_base"`
+	DecimalBase int64 `json:"decimal_base,omitempty"`
 	LaunchPadAmount int64 `json:"launch_pad_amount,omitempty"`
 	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
 	MaxBuy int64 `json:"max_buy,omitempty"`
