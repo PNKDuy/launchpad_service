@@ -9,6 +9,7 @@ import (
 
 type Token struct {
 	Id uuid.UUID `json:"id"`
+	Index int `json:"index"`
 	Name string `json:"name"`
 	SymbolToken string `json:"symbol_token"`
 	Icon string `json:"icon"`
@@ -28,6 +29,7 @@ type Token struct {
 	BaseCrypto string `json:"base_crypto,omitempty"`
 	Decimal int64 `json:"decimal,omitempty"`
 	DecimalBase int64 `json:"decimal_base,omitempty"`
+	AddressBase string `json:"address_base"`
 	LaunchPadAmount int64 `json:"launch_pad_amount,omitempty"`
 	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
 	MaxBuy int64 `json:"max_buy,omitempty"`
