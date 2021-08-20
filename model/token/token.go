@@ -14,29 +14,29 @@ type Token struct {
 	SymbolToken string `json:"symbol_token"`
 	Icon string `json:"icon"`
 	TotalSupply string `json:"total_supply"`
-	Description string `json:"description,omitempty"`
-	Website string `json:"website,omitempty"`
-	Twitter string `json:"twitter,omitempty"`
-	Facebook string `json:"facebook,omitempty"`
-	Telegram string `json:"telegram,omitempty"`
-	Reddit string `json:"reddit,omitempty"`
-	CoinMarketCap string `json:"coin_market_cap,omitempty"`
-	CoinGecko string `json:"coin_gecko,omitempty"`
+	Description string `json:"description"`
+	Website string `json:"website"`
+	Twitter string `json:"twitter"`
+	Facebook string `json:"facebook"`
+	Telegram string `json:"telegram"`
+	Reddit string `json:"reddit"`
+	CoinMarketCap string `json:"coin_market_cap"`
+	CoinGecko string `json:"coin_gecko"`
 	Address string `json:"address"`
 	ChainId string `json:"chain_id,omitempty"`
 	ChainName string `json:"chain_name,omitempty"`
 	Locked bool `json:"locked"`
 	BaseCrypto string `json:"base_crypto,omitempty"`
 	Decimal int64 `json:"decimal,omitempty"`
-	DecimalBase int64 `json:"decimal_base,omitempty"`
+	DecimalBase int64 `json:"decimal_base"`
 	AddressBase string `json:"address_base"`
-	LaunchPadAmount string `json:"launch_pad_amount,omitempty"`
-	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
-	MaxBuy string `json:"max_buy,omitempty"`
-	MinBuy string `json:"min_buy,omitempty"`
-	TimeStart int64 `json:"time_start,omitempty"`
-	TimeEnd int64	`json:"time_end,omitempty"`
-	ImageBanner string `json:"image_banner,omitempty"`
+	LaunchPadAmount string `json:"launch_pad_amount"`
+	LaunchPadPrice float64 `json:"launch_pad_price"`
+	MaxBuy string `json:"max_buy"`
+	MinBuy string `json:"min_buy"`
+	TimeStart int64 `json:"time_start"`
+	TimeEnd int64	`json:"time_end"`
+	ImageBanner string `json:"image_banner"`
 	IsDeleted bool `json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -121,7 +121,7 @@ func (token Token)Update() (Token, error){
 	if err != nil {
 		return token, err
 	}
-
+    token.UpdatedAt = time.Now()
 	result := db.Model(&token).Updates(token)
 	if result.Error != nil {
 		return token, err
