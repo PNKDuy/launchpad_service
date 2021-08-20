@@ -5,6 +5,7 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"launchpad_service/controller"
 	_ "launchpad_service/docs"
+	"time"
 )
 
 // @title Swagger Launchpad Service API
@@ -21,6 +22,8 @@ import (
 
 // @BasePath /
 func main() {
+	go controller.DoEvery(500*time.Millisecond, controller.GetPriceAndUpdateList)
+
 	server := echo.New()
 
 	launchpad := server.Group("/launchpad")
@@ -30,6 +33,14 @@ func main() {
 		launchpad.GET("/get-by-id/:id", controller.GetById)
 		launchpad.PUT("/update/:id", controller.Update)
 		launchpad.PUT("/deactivate-token/:id", controller.DeactivateToken)
+	}
+
+	token := server.Group("/token")
+	{
+		token.GET("/price/:token", controller.GetPrice)
+		token.GET("/price", controller.GetAllPrice)
+		token.GET("/klines/:token/:interval", controller.GetKlines)
+		token.GET("/transaction/:hash", controller.GetTransaction)
 	}
 
 	server.GET("/swagger/*", echoSwagger.WrapHandler)

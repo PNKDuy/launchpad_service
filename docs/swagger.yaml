@@ -126,4 +126,99 @@ paths:
       summary: Update token
       tags:
       - launchpad
+  /token/klines/{token}/{interval}:
+    get:
+      parameters:
+      - description: token
+        in: path
+        name: token
+        required: true
+        type: string
+      - description: interval
+        in: path
+        name: interval
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: get klines(candlestick) by symbol
+      tags:
+      - token
+  /token/price:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: get price by Token via Binance API
+      tags:
+      - token
+  /token/price/{token}:
+    get:
+      parameters:
+      - description: token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: get price by Token via Binance API
+      tags:
+      - token
+  /token/transaction/{hash}:
+    get:
+      parameters:
+      - description: hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: HTTPError
+      summary: get transaction by its hash
+      tags:
+      - token
 swagger: "2.0"
