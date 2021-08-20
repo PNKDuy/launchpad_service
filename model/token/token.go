@@ -13,7 +13,7 @@ type Token struct {
 	Name string `json:"name"`
 	SymbolToken string `json:"symbol_token"`
 	Icon string `json:"icon"`
-	TotalSupply int64 `json:"total_supply"`
+	TotalSupply string `json:"total_supply"`
 	Description string `json:"description,omitempty"`
 	Website string `json:"website,omitempty"`
 	Twitter string `json:"twitter,omitempty"`
@@ -30,10 +30,10 @@ type Token struct {
 	Decimal int64 `json:"decimal,omitempty"`
 	DecimalBase int64 `json:"decimal_base,omitempty"`
 	AddressBase string `json:"address_base"`
-	LaunchPadAmount int64 `json:"launch_pad_amount,omitempty"`
+	LaunchPadAmount string `json:"launch_pad_amount,omitempty"`
 	LaunchPadPrice float64 `json:"launch_pad_price,omitempty"`
-	MaxBuy int64 `json:"max_buy,omitempty"`
-	MinBuy int64 `json:"min_buy,omitempty"`
+	MaxBuy string `json:"max_buy,omitempty"`
+	MinBuy string `json:"min_buy,omitempty"`
 	TimeStart int64 `json:"time_start,omitempty"`
 	TimeEnd int64	`json:"time_end,omitempty"`
 	ImageBanner string `json:"image_banner,omitempty"`
