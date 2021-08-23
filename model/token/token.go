@@ -34,6 +34,7 @@ type Token struct {
 	LaunchPadPrice float64 `json:"launch_pad_price"`
 	MaxBuy string `json:"max_buy"`
 	MinBuy string `json:"min_buy"`
+	ClaimTime int64 `json:"claim_time"`
 	TimeStart int64 `json:"time_start"`
 	TimeEnd int64	`json:"time_end"`
 	ImageBanner string `json:"image_banner"`
