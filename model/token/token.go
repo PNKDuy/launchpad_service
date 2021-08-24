@@ -90,14 +90,14 @@ func Create(token Token) (Token, error) {
 		return token, err
 	}
 
-	isExisted, err := checkIfNameOrSymbolTokenExists(token)
-	if err != nil {
-		return token, err
-	}
-
-	if isExisted == true {
-		return token, errors.New("token name or symbol token is already existed")
-	}
+	//isExisted, err := checkIfNameOrSymbolTokenExists(token)
+	//if err != nil {
+	//	return token, err
+	//}
+	//
+	//if isExisted == true {
+	//	return token, errors.New("token name or symbol token is already existed")
+	//}
 
 	token.Id = uuid.New()
 	token.CreatedAt = time.Now()
