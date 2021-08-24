@@ -1,7 +1,6 @@
 package token
 
 import (
-	"errors"
 	"github.com/google/uuid"
 	"launchpad_service/model"
 	"time"
