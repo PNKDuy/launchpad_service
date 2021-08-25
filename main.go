@@ -22,7 +22,7 @@ import (
 
 // @BasePath /
 func main() {
-	go controller.DoEvery(500*time.Millisecond, controller.GetPriceAndUpdateList)
+	go controller.DoEvery(2*time.Second, controller.GetPriceAndUpdateList)
 
 	server := echo.New()
 
@@ -41,8 +41,13 @@ func main() {
 		token.GET("/price", controller.GetAllPrice)
 		token.GET("/klines/:token/:interval", controller.GetKlines)
 		token.GET("/transaction/:hash", controller.GetTransaction)
+		token.GET("/price-by-currency/:token/:currency", controller.GetPriceByCurrency)
 	}
 
 	server.GET("/swagger/*", echoSwagger.WrapHandler)
 	server.Logger.Fatal(server.Start(":8081"))
+
+	//input := "a,b,c"
+	//var arr []string
+	//
 }
