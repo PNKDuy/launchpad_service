@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
+	"github.com/jmoiron/jsonq"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
 	"io/ioutil"
 	"launchpad_service/model/response"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -25,6 +27,57 @@ var priceList []response.Response
 // @Router /token/price [GET]
 func GetAllPrice(c echo.Context) error {
 	return c.JSON(http.StatusOK, priceList)
+}
+
+// GetPriceByCurrency
+// @Summary get price by Token via Binance API
+// @Tags token
+// @Param token path string true "token"
+// @Param currency path string true "currency"
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 400 {HTTPError} HTTPError
+// @Router /token/price-by-currency/{token}/{currency} [GET]
+func GetPriceByCurrency(c echo.Context) error{
+ 	token := c.Param("token")
+ 	currency := c.Param("currency")
+ 	tokenUsdtPair := token + "USDT"
+ 	var tokenUsdtPrice, priceChange float64
+ 	var priceChangePercent, volume string
+ 	for i := range priceList {
+		if strings.EqualFold(tokenUsdtPair, priceList[i].Symbol) {
+			tokenUsdtPrice, _ = strconv.ParseFloat(priceList[i].Price, 64)
+			priceChange, _ = strconv.ParseFloat(priceList[i].PriceChange, 64)
+			priceChangePercent = priceList[i].PriceChangePercent
+			volume = priceList[i].Volume
+			break
+		}
+	}
+
+	url := "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies="
+	result, _ := http.Get(url + currency)
+
+	body, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		return err
+	}
+	var currencyPrice map[string]interface{}
+	dec := json.NewDecoder(strings.NewReader(string(body)))
+	_ = dec.Decode(&currencyPrice)
+
+	jq := jsonq.NewQuery(currencyPrice)
+	pairUsdtToken, _ := jq.Float("tether", currency)
+
+	price := pairUsdtToken * tokenUsdtPrice
+	var res response.Currency
+	res.Price = price
+	res.Symbol = token
+	res.PriceChangePercent = priceChangePercent
+	res.PriceChange= priceChange * pairUsdtToken
+	res.Volume = volume
+
+
+	return c.JSON(http.StatusOK, res)
 }
 
 // GetPrice
@@ -71,9 +124,6 @@ func GetPriceAndUpdateList() error {
 			return err
 		}
 	}
-
-
-	//fmt.Println(priceList[0].Price)
 	return nil
 }
 
