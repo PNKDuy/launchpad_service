@@ -40,19 +40,8 @@ func GetAllPrice(c echo.Context) error {
 // @Router /token/price-by-currency/{token}/{currency} [GET]
 func GetPriceByCurrency(c echo.Context) error{
  	token := c.Param("token")
- 	currency := c.Param("currency")
- 	tokenUsdtPair := token + "USDT"
- 	var tokenUsdtPrice, priceChange float64
- 	var priceChangePercent, volume string
- 	for i := range priceList {
-		if strings.EqualFold(tokenUsdtPair, priceList[i].Symbol) {
-			tokenUsdtPrice, _ = strconv.ParseFloat(priceList[i].Price, 64)
-			priceChange, _ = strconv.ParseFloat(priceList[i].PriceChange, 64)
-			priceChangePercent = priceList[i].PriceChangePercent
-			volume = priceList[i].Volume
-			break
-		}
-	}
+ 	currency := strings.ToLower(c.Param("currency"))
+ 	var resList []response.Currency
 
 	url := "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies="
 	result, _ := http.Get(url + currency)
@@ -68,16 +57,34 @@ func GetPriceByCurrency(c echo.Context) error{
 	jq := jsonq.NewQuery(currencyPrice)
 	pairUsdtToken, _ := jq.Float("tether", currency)
 
-	price := pairUsdtToken * tokenUsdtPrice
-	var res response.Currency
-	res.Price = price
-	res.Symbol = token
-	res.PriceChangePercent = priceChangePercent
-	res.PriceChange= priceChange * pairUsdtToken
-	res.Volume = volume
+	tokenList := strings.Split(token, "%2C")
+	for i := range tokenList {
+		tokenUsdtPair := tokenList[i] + "USDT"
+		var tokenUsdtPrice, priceChange float64
+		var priceChangePercent, volume string
+		for i := range priceList {
+			if strings.EqualFold(tokenUsdtPair, priceList[i].Symbol) {
+				tokenUsdtPrice, _ = strconv.ParseFloat(priceList[i].Price, 64)
+				priceChange, _ = strconv.ParseFloat(priceList[i].PriceChange, 64)
+				priceChangePercent = priceList[i].PriceChangePercent
+				volume = priceList[i].Volume
+				break
+			}
+		}
+
+		price := pairUsdtToken * tokenUsdtPrice
+		var res response.Currency
+		res.Price = price
+		res.Symbol = tokenList[i]
+		res.PriceChangePercent = priceChangePercent
+		res.PriceChange= priceChange * pairUsdtToken
+		res.Volume = volume
+		resList = append(resList, res)
+	}
 
 
-	return c.JSON(http.StatusOK, res)
+
+	return c.JSON(http.StatusOK, resList)
 }
 
 // GetPrice

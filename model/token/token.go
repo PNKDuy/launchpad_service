@@ -154,23 +154,3 @@ func (token Token)DeactivateToken() (bool, error) {
 
 	return true, nil
 }
-
-func checkIfNameOrSymbolTokenExists(token Token) (bool, error) {
-	db, err := model.ConnectToPostgres()
-	var tokens []Token
-	if err != nil {
-		return true, err
-	}
-	result := db.Where("is_deleted = false AND ( name = ? OR symbol_token = ?)", token.Name, token.SymbolToken).Find(&tokens)
-	if result.RowsAffected != 0 {
-		return true, nil
-	}
-
-	sqlDB, _ := db.DB()
-	err = sqlDB.Close()
-	if err != nil {
-		return true, err
-	}
-
-	return false, nil
-}
