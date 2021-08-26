@@ -88,7 +88,7 @@ func GetPriceByCurrency(c echo.Context) error{
 		res.Symbol = tokenList[i]
 		res.PriceChangePercent = priceChangePercent
 		res.PriceChange= priceChange * pairUsdtToken
-		res.Volume = volume * pairUsdtToken
+		res.Volume = volume * price
 		res.HighPrice = highPrice * pairUsdtToken
 		res.LowPrice = lowPrice * pairUsdtToken
 		resList = append(resList, res)
