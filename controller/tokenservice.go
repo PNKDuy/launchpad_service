@@ -18,6 +18,7 @@ import (
 
 var priceList []response.Response
 
+
 // GetAllPrice
 // @Summary get price by Token via Binance API
 // @Tags token
@@ -32,7 +33,7 @@ func GetAllPrice(c echo.Context) error {
 // GetPriceByCurrency
 // @Summary get price by Token via Binance API
 // @Tags token
-// @Param token path string true "token"
+// @Param token path string false "token"
 // @Param currency path string true "currency"
 // @Produce json
 // @Success 200 {object} map[string]string
@@ -42,6 +43,7 @@ func GetPriceByCurrency(c echo.Context) error{
  	token := c.Param("token")
  	currency := strings.ToLower(c.Param("currency"))
  	var resList []response.Currency
+ 	token = strings.ReplaceAll(token, "2%C", ",")
 
 	url := "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies="
 	result, _ := http.Get(url + currency)
@@ -57,17 +59,25 @@ func GetPriceByCurrency(c echo.Context) error{
 	jq := jsonq.NewQuery(currencyPrice)
 	pairUsdtToken, _ := jq.Float("tether", currency)
 
-	tokenList := strings.Split(token, "%2C")
+	if strings.EqualFold(token, "undefined") {
+		token = response.DefaultList
+	}
+
+	var tokenUsdtPrice, priceChange, volume, highPrice, lowPrice float64
+	var priceChangePercent string
+
+	tokenList := strings.Split(token,  ",")
 	for i := range tokenList {
 		tokenUsdtPair := tokenList[i] + "USDT"
-		var tokenUsdtPrice, priceChange float64
-		var priceChangePercent, volume string
+
 		for i := range priceList {
 			if strings.EqualFold(tokenUsdtPair, priceList[i].Symbol) {
 				tokenUsdtPrice, _ = strconv.ParseFloat(priceList[i].Price, 64)
 				priceChange, _ = strconv.ParseFloat(priceList[i].PriceChange, 64)
 				priceChangePercent = priceList[i].PriceChangePercent
-				volume = priceList[i].Volume
+				volume, _ = strconv.ParseFloat(priceList[i].Volume, 64)
+				highPrice, _ = strconv.ParseFloat(priceList[i].HighPrice, 64)
+				lowPrice, _ = strconv.ParseFloat(priceList[i].LowPrice, 64)
 				break
 			}
 		}
@@ -78,12 +88,12 @@ func GetPriceByCurrency(c echo.Context) error{
 		res.Symbol = tokenList[i]
 		res.PriceChangePercent = priceChangePercent
 		res.PriceChange= priceChange * pairUsdtToken
-		res.Volume = volume
+		res.Volume = volume * pairUsdtToken
+		res.HighPrice = highPrice * pairUsdtToken
+		res.LowPrice = lowPrice * pairUsdtToken
 		resList = append(resList, res)
 	}
-
-
-
+	
 	return c.JSON(http.StatusOK, resList)
 }
 

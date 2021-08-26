@@ -179,7 +179,6 @@ paths:
       - description: token
         in: path
         name: token
-        required: true
         type: string
       - description: currency
         in: path

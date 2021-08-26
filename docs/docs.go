@@ -293,8 +293,7 @@ var doc = `{
                         "type": "string",
                         "description": "token",
                         "name": "token",
-                        "in": "path",
-                        "required": true
+                        "in": "path"
                     },
                     {
                         "type": "string",
