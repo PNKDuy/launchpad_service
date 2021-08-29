@@ -131,19 +131,18 @@ func GetPriceAndUpdateList() error {
 		"https://api.binance.com/api/v3/ticker/24hr",
 	}
 	for _, url := range urls {
-		result, err := http.Get(url)
-		if err != nil {
-			return err
-		}
+		result, _ := http.Get(url)
+
 
 		body, err := ioutil.ReadAll(result.Body)
 		if err != nil {
 			return err
 		}
+		defer result.Body.Close()
 		if err = json.Unmarshal(body, &priceList); err != nil {
 			return err
 		}
-		defer result.Body.Close()
+
 	}
 
 	return nil
