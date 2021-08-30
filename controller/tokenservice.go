@@ -17,6 +17,7 @@ import (
 )
 
 var priceList []*response.Response
+var klinesList [][]interface{}
 
 
 // GetAllPrice
@@ -176,7 +177,10 @@ func GetKlines(c echo.Context) error {
 			"status": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, string(body))
+	if err = json.Unmarshal(body, &klinesList); err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, klinesList)
 }
 
 // GetTransaction
