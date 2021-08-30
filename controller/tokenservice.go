@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var priceList []response.Response
+var priceList []*response.Response
 
 
 // GetAllPrice
@@ -112,7 +112,7 @@ func GetPrice(c echo.Context) error {
 	var result response.Response
 	for i := range priceList {
 		if strings.EqualFold(priceList[i].Symbol, token) {
-			result = priceList[i]
+			result = *priceList[i]
 			break
 		}
 	}
@@ -135,14 +135,12 @@ func GetPriceAndUpdateList() error {
 		result, err := http.Get(url)
 		if err != nil {
 			log.Fatal(err)
-			break
 			return err
 		}
 
 		body, err := ioutil.ReadAll(result.Body)
 		if err != nil {
 			log.Fatal(err)
-			break
 			return err
 		}
 		defer result.Body.Close()
