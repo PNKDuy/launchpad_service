@@ -10,7 +10,6 @@ import (
 	"google.golang.org/api/option"
 	"io/ioutil"
 	"launchpad_service/model/response"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -134,20 +133,20 @@ func GetPriceAndUpdateList() error {
 	for _, url := range urls {
 		result, err := http.Get(url)
 		if err != nil {
-			log.Fatal(err)
 			return err
 		}
 
 		body, err := ioutil.ReadAll(result.Body)
+		if body == nil {
+			break
+		}
 		if err != nil {
-			log.Fatal(err)
 			return err
 		}
-		defer result.Body.Close()
 		if err = json.Unmarshal(body, &priceList); err != nil {
 			return err
 		}
-
+		result.Body.Close()
 	}
 
 	return nil
