@@ -138,11 +138,11 @@ func GetPriceAndUpdateList() error {
 		if err != nil {
 			return err
 		}
-
-		body, err := ioutil.ReadAll(result.Body)
-		if body == nil {
+		if result.Body == nil {
 			break
 		}
+		body, err := ioutil.ReadAll(result.Body)
+
 		if err != nil {
 			return err
 		}
