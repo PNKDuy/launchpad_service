@@ -59,7 +59,7 @@ func GetPriceByCurrency(c echo.Context) error{
 	jq := jsonq.NewQuery(currencyPrice)
 	pairUsdtToken, _ := jq.Float("tether", currency)
 
-	if strings.EqualFold(token, "undefined") {
+	if strings.EqualFold(token, "undefined") || strings.EqualFold(token, "{token}") {
 		token = response.DefaultList
 	}
 
@@ -120,9 +120,11 @@ func GetPrice(c echo.Context) error {
 }
 
 func DoEvery(d time.Duration, f func()error) {
-	for range time.Tick(d) {
+	ticker := time.NewTicker(d)
+	for range ticker.C {
 		f()
 	}
+	ticker.Stop()
 }
 
 func GetPriceAndUpdateList() error {
