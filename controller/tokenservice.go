@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
-	"fmt"
 	"github.com/jmoiron/jsonq"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
@@ -157,7 +156,6 @@ func GetPriceAndUpdateList() error {
 		result.Body.Close()
 
 	}
-	fmt.Println(time.Now())
 
 	return nil
 }
