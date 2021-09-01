@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
+	"fmt"
 	"github.com/jmoiron/jsonq"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
@@ -137,7 +138,7 @@ func GetPriceAndUpdateList() error {
 	for _, url := range urls {
 		result, err := http.Get(url)
 		if err != nil {
-			log.Println(err)
+			//log.Println(err)
 			return err
 		}
 		if result.Body == nil {
@@ -147,15 +148,16 @@ func GetPriceAndUpdateList() error {
 		body, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
-			log.Println(err)
+			//log.Println(err)
 			return err
 		}
 		if err = json.Unmarshal(body, &priceList); err != nil {
-			log.Println(err)
-			return err
+			break
 		}
+		result.Body.Close()
 
 	}
+	fmt.Println(time.Now())
 
 	return nil
 }
