@@ -10,13 +10,14 @@ import (
 	"google.golang.org/api/option"
 	"io/ioutil"
 	"launchpad_service/model/response"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var priceList []*response.Response
+var priceList []response.Response
 var klinesList [][]interface{}
 
 
@@ -112,7 +113,7 @@ func GetPrice(c echo.Context) error {
 	var result response.Response
 	for i := range priceList {
 		if strings.EqualFold(priceList[i].Symbol, token) {
-			result = *priceList[i]
+			result = priceList[i]
 			break
 		}
 	}
@@ -133,20 +134,24 @@ func GetPriceAndUpdateList() error {
 		"https://api.binance.com/api/v3/ticker/price",
 		"https://api.binance.com/api/v3/ticker/24hr",
 	}
-	for _, url := range urls {
-		result, err := http.Get(url)
+	for i := range urls {
+		result, err := http.Get(urls[i])
 		if err != nil {
+			log.Println(err)
 			return err
 		}
 		if result.Body == nil {
+			log.Println("result body nil")
 			break
 		}
 		body, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
+			log.Println(err)
 			return err
 		}
 		if err = json.Unmarshal(body, &priceList); err != nil {
+			log.Println(err)
 			return err
 		}
 		result.Body.Close()
