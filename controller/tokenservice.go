@@ -19,6 +19,10 @@ import (
 
 var priceList []response.Response
 var klinesList [][]interface{}
+var urls = []string{
+		"https://api.binance.com/api/v3/ticker/price",
+		"https://api.binance.com/api/v3/ticker/24hr",
+}
 
 
 // GetAllPrice
@@ -130,12 +134,8 @@ func DoEvery(d time.Duration, f func()error) {
 }
 
 func GetPriceAndUpdateList() error {
-	urls := []string{
-		"https://api.binance.com/api/v3/ticker/price",
-		"https://api.binance.com/api/v3/ticker/24hr",
-	}
-	for i := range urls {
-		result, err := http.Get(urls[i])
+	for _, url := range urls {
+		result, err := http.Get(url)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -154,7 +154,7 @@ func GetPriceAndUpdateList() error {
 			log.Println(err)
 			return err
 		}
-		result.Body.Close()
+
 	}
 
 	return nil
