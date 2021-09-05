@@ -144,17 +144,21 @@ func GetPriceAndUpdateList() error {
 			log.Println("result body nil")
 			break
 		}
+		if strings.EqualFold(result.Status, "429 Too Many Requests") {
+			break
+		}
+		
 		body, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
-			//log.Println(err)
+			log.Println(err)
 			return err
 		}
-		if err = json.Unmarshal(body, &priceList); err != nil {
+		if err := json.Unmarshal(body, &priceList); err != nil {
+			log.Println(err)
 			break
 		}
 		result.Body.Close()
-
 	}
 
 	return nil
