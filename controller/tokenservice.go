@@ -145,9 +145,10 @@ func GetPriceAndUpdateList() error {
 			break
 		}
 		if strings.EqualFold(result.Status, "429 Too Many Requests") {
+			result.Body.Close()
 			break
 		}
-		
+
 		body, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
