@@ -134,6 +134,7 @@ func DoEvery(d time.Duration, f func()error) {
 }
 
 func GetPriceAndUpdateList() error {
+	priceList = []response.Response{}
 	for _, url := range urls {
 		result, err := http.Get(url)
 		if err != nil {
