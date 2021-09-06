@@ -134,35 +134,41 @@ func DoEvery(d time.Duration, f func()error) {
 }
 
 func GetPriceAndUpdateList() error {
-	priceList = []response.Response{}
 	for _, url := range urls {
-		result, err := http.Get(url)
+		err := fetchAPI(url)
 		if err != nil {
-			//log.Println(err)
-			return err
-		}
-		if result.Body == nil {
-			log.Println("result body nil")
 			break
 		}
-		if strings.EqualFold(result.Status, "429 Too Many Requests") {
-			result.Body.Close()
-			break
-		}
+	}
+	return nil
+}
 
-		body, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		if err := json.Unmarshal(body, &priceList); err != nil {
-			log.Println(err)
-			break
-		}
+func fetchAPI(url string) error {
+	result, err := http.Get(url)
+	if err != nil {
+		//log.Println(err)
+		return err
+	}
+	if result.Body == nil {
+		log.Println("result body nil")
+		return err
+	}
+	if strings.EqualFold(result.Status, "429 Too Many Requests") {
 		result.Body.Close()
+		return err
 	}
 
+	body, err := ioutil.ReadAll(result.Body)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if err := json.Unmarshal(body, &priceList); err != nil {
+		log.Println(err)
+		return err
+	}
+	defer result.Body.Close()
 	return nil
 }
 
