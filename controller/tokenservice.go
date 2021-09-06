@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/jsonq"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
+	"io"
 	"io/ioutil"
 	"launchpad_service/model/response"
 	"log"
@@ -128,7 +129,10 @@ func GetPrice(c echo.Context) error {
 func DoEvery(d time.Duration, f func()error) {
 	ticker := time.NewTicker(d)
 	for range ticker.C {
-		f()
+		err := f()
+		if err != nil {
+			return
+		}
 	}
 	ticker.Stop()
 }
@@ -137,7 +141,7 @@ func GetPriceAndUpdateList() error {
 	for _, url := range urls {
 		err := fetchAPI(url)
 		if err != nil {
-			break
+			return err
 		}
 	}
 	return nil
@@ -151,10 +155,21 @@ func fetchAPI(url string) error {
 	}
 	if result.Body == nil {
 		log.Println("result body nil")
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(result.Body)
 		return err
 	}
 	if strings.EqualFold(result.Status, "429 Too Many Requests") {
-		result.Body.Close()
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(result.Body)
 		return err
 	}
 
@@ -162,13 +177,32 @@ func fetchAPI(url string) error {
 
 	if err != nil {
 		log.Println(err)
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(result.Body)
 		return err
 	}
+
 	if err := json.Unmarshal(body, &priceList); err != nil {
 		log.Println(err)
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(result.Body)
 		return err
 	}
-	defer result.Body.Close()
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(result.Body)
 	return nil
 }
 
