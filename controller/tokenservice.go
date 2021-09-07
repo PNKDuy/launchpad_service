@@ -148,7 +148,7 @@ func GetPriceAndUpdateList() error {
 func getAPI(url string) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Println("152",err)
+		log.Println(err)
 		return err
 	}
 	client := &http.Client{ Timeout: 2*time.Second}
@@ -156,23 +156,25 @@ func getAPI(url string) error {
 	req.Header.Set("User-Agent", "Mozilla/5.0")
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
 	if resp.Body == nil {
-		log.Println("164",err)
-		return err
+		log.Println("body empty")
+		return nil
 	}
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
+		log.Println("Too many requests")
+		return nil
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&priceList); err != nil {
+		log.Println(err)
 		return err
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&priceList)
-	if err != nil {
-		return err
-	}
-	
 	defer resp.Body.Close()
 	return nil
 }
