@@ -23,7 +23,6 @@ var urls = []string{
 		"https://api.binance.com/api/v3/ticker/price",
 		"https://api.binance.com/api/v3/ticker/24hr",
 }
-var client http.Client
 
 
 // GetAllPrice
@@ -152,7 +151,7 @@ func getAPI(url string) error {
 		log.Println("152",err)
 		return err
 	}
-	client.Timeout = 2*time.Second
+	client := &http.Client{ Timeout: 2*time.Second}
 
 	req.Header.Set("User-Agent", "Mozilla/5.0")
 	resp, err := client.Do(req)
@@ -169,16 +168,11 @@ func getAPI(url string) error {
 		return err
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(&priceList)
 	if err != nil {
-		log.Println("175",err)
 		return err
 	}
-
-	if err := json.Unmarshal(body, &priceList); err != nil {
-		log.Println("180",err)
-		return err
-	}
+	
 	defer resp.Body.Close()
 	return nil
 }

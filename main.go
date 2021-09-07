@@ -22,7 +22,7 @@ import (
 
 // @BasePath /
 func main() {
-	go controller.DoEvery(3*time.Second, controller.GetPriceAndUpdateList)
+	go controller.DoEvery(2*time.Second, controller.GetPriceAndUpdateList)
 
 	server := echo.New()
 
