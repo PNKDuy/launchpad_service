@@ -8,7 +8,6 @@ import (
 	"github.com/jmoiron/jsonq"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
-	"io"
 	"io/ioutil"
 	"launchpad_service/model/response"
 	"log"
@@ -148,18 +147,27 @@ func GetPriceAndUpdateList() error {
 }
 
 func getAPI(url string) error {
-	client := &http.Client{
-		Timeout: 2*time.Second,
-	}
-	resp, err := client.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+	client := &http.Client{
+		Timeout: 2*time.Second,
+	}
+
+	req.Header.Set("User-Agent", "Mozilla/5.0")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	if resp.Body == nil {
 		log.Println(err)
 		return err
 	}
+
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
 		resp.Body.Close()
 		return err
@@ -179,66 +187,6 @@ func getAPI(url string) error {
 	defer resp.Body.Close()
 	return nil
 }
-
-func fetchAPI(url string) error {
-	result, err := http.Get(url)
-	if err != nil {
-		//log.Println(err)
-		return err
-	}
-	if result.Body == nil {
-		log.Println("result body nil")
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-
-			}
-		}(result.Body)
-		return err
-	}
-	if strings.EqualFold(result.Status, "429 Too Many Requests") {
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-
-			}
-		}(result.Body)
-		return err
-	}
-
-	body, err := ioutil.ReadAll(result.Body)
-
-	if err != nil {
-		log.Println(err)
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-
-			}
-		}(result.Body)
-		return err
-	}
-
-	if err := json.Unmarshal(body, &priceList); err != nil {
-		log.Println(err)
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-
-			}
-		}(result.Body)
-		return err
-	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-
-		}
-	}(result.Body)
-	return nil
-}
-
 
 // GetKlines
 // @Summary get klines(candlestick) by symbol
