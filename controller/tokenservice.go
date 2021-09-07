@@ -23,6 +23,7 @@ var urls = []string{
 		"https://api.binance.com/api/v3/ticker/price",
 		"https://api.binance.com/api/v3/ticker/24hr",
 }
+var client http.Client
 
 
 // GetAllPrice
@@ -133,7 +134,6 @@ func DoEvery(d time.Duration, f func()error) {
 			break
 		}
 	}
-	ticker.Stop()
 }
 
 func GetPriceAndUpdateList() error {
@@ -149,41 +149,36 @@ func GetPriceAndUpdateList() error {
 func getAPI(url string) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("152",err)
 		return err
 	}
-	client := &http.Client{
-		Timeout: 2*time.Second,
-	}
+	client.Timeout = 2*time.Second
 
 	req.Header.Set("User-Agent", "Mozilla/5.0")
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
 	if resp.Body == nil {
-		log.Println(err)
+		log.Println("164",err)
 		return err
 	}
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
-		resp.Body.Close()
 		return err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println("175",err)
 		return err
 	}
 
 	if err := json.Unmarshal(body, &priceList); err != nil {
-		log.Println(err)
+		log.Println("180",err)
 		return err
 	}
-
 	defer resp.Body.Close()
 	return nil
 }
