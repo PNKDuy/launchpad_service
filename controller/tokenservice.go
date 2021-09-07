@@ -131,7 +131,7 @@ func DoEvery(d time.Duration, f func()error) {
 	for range ticker.C {
 		err := f()
 		if err != nil {
-			return
+			break
 		}
 	}
 	ticker.Stop()
@@ -139,11 +139,44 @@ func DoEvery(d time.Duration, f func()error) {
 
 func GetPriceAndUpdateList() error {
 	for _, url := range urls {
-		err := fetchAPI(url)
+		err := getAPI(url)
 		if err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func getAPI(url string) error {
+	client := &http.Client{
+		Timeout: 2*time.Second,
+	}
+	resp, err := client.Get(url)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if resp.Body == nil {
+		log.Println(err)
+		return err
+	}
+	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
+		resp.Body.Close()
+		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if err := json.Unmarshal(body, &priceList); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	defer resp.Body.Close()
 	return nil
 }
 
