@@ -49,7 +49,7 @@ func GetPriceByCurrency(c echo.Context) error{
  	token := c.Param("token")
  	currency := strings.ToLower(c.Param("currency"))
  	var resList []response.Currency
- 	token = strings.ReplaceAll(token, "2%C", ",")
+ 	token = strings.ReplaceAll(token, "%2C", ",")
 
 	url := "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies="
 	result, _ := http.Get(url + currency)
