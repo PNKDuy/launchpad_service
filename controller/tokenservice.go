@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
 	"github.com/jmoiron/jsonq"
@@ -167,7 +168,7 @@ func getAPI(url string) error {
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
 		log.Println("Too many request")
-		return nil
+		return errors.New("429 Too Many Requests")
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&priceList); err != nil {
