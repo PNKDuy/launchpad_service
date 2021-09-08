@@ -167,6 +167,7 @@ func getAPI(url string) error {
 	}
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
+		log.Println("Too Many Requests")
 		return errors.New("429 Too Many Requests")
 	}
 
