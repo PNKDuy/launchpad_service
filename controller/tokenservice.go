@@ -13,7 +13,6 @@ import (
 	"launchpad_service/model/response"
 	"log"
 	"net/http"
-	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -134,7 +133,6 @@ func DoEvery(d time.Duration, f func()error) {
 		if err != nil {
 			break
 		}
-		debug.FreeOSMemory()
 	}
 }
 
@@ -151,34 +149,31 @@ func GetPriceAndUpdateList() error {
 func getAPI(url string) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("154", err)
 		return err
 	}
-	client := &http.Client{ Timeout: 2*time.Second}
+	client := &http.Client{ Timeout: 1*time.Minute}
 
 	req.Header.Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println(err)
+		log.Println("162", err)
 		return err
 	}
 
-	if resp.Body == nil {
-		log.Println("body empty")
-		return nil
-	}
-
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
+		log.Println("Too many request")
 		return errors.New("429 Too Many Requests")
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&priceList); err != nil {
-		log.Println(err)
+		log.Println("176", err)
 		return err
 	}
 
 	defer resp.Body.Close()
 	return nil
+
 }
 
 // GetKlines
