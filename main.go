@@ -46,4 +46,6 @@ func main() {
 
 	server.GET("/swagger/*", echoSwagger.WrapHandler)
 	server.Logger.Fatal(server.Start(":8081"))
+
+	select{}
 }
