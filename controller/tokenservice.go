@@ -127,8 +127,8 @@ func GetPrice(c echo.Context) error {
 }
 
 func DoEvery(d time.Duration, f func()error) {
-	ticker := time.NewTicker(d)
-	for range ticker.C {
+	ticker := time.Tick(d)
+	for range ticker {
 		err := f()
 		if err != nil {
 			break
@@ -160,6 +160,7 @@ func getAPI(url string) error {
 		log.Println("162", err)
 		return err
 	}
+	defer resp.Body.Close()
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
 		log.Println("Too many request")
@@ -171,7 +172,7 @@ func getAPI(url string) error {
 		return err
 	}
 
-	defer resp.Body.Close()
+
 	return nil
 
 }
