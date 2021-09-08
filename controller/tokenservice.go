@@ -153,7 +153,7 @@ func getAPI(url string) error {
 	}
 	client := &http.Client{ Timeout: 2*time.Second}
 
-	req.Header.Set("User-Agent", "Mozilla/5.0")
+	req.Header.Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
@@ -166,6 +166,7 @@ func getAPI(url string) error {
 	}
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
+		log.Println("Too many request")
 		return nil
 	}
 
