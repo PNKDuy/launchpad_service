@@ -155,16 +155,18 @@ func getAPI(url string) error {
 		log.Println("154", err)
 		return err
 	}
-	client := &http.Client{ Timeout: 1*time.Minute}
+	client := &http.Client{ Timeout: 5*time.Second}
 
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("162", err)
+		defer resp.Body.Close()
 		return err
 	}
 	defer resp.Body.Close()
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
+		defer resp.Body.Close()
 		return errors.New("429 Too Many Requests")
 	}
 
@@ -174,7 +176,6 @@ func getAPI(url string) error {
 		return err
 	}
 	mux.Unlock()
-
 
 	return nil
 
