@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -24,6 +25,7 @@ var urls = []string{
 		"https://api.binance.com/api/v3/ticker/price",
 		"https://api.binance.com/api/v3/ticker/24hr",
 }
+var mux = &sync.Mutex{}
 
 
 // GetAllPrice
@@ -76,7 +78,7 @@ func GetPriceByCurrency(c echo.Context) error{
 	tokenList := strings.Split(token,  ",")
 	for i := range tokenList {
 		tokenUsdtPair := tokenList[i] + "USDT"
-
+		mux.Lock()
 		for i := range priceList {
 			if strings.EqualFold(tokenUsdtPair, priceList[i].Symbol) {
 				tokenUsdtPrice, _ = strconv.ParseFloat(priceList[i].Price, 64)
@@ -88,6 +90,7 @@ func GetPriceByCurrency(c echo.Context) error{
 				break
 			}
 		}
+		mux.Unlock()
 
 		price := pairUsdtToken * tokenUsdtPrice
 		var res response.Currency
@@ -154,7 +157,6 @@ func getAPI(url string) error {
 	}
 	client := &http.Client{ Timeout: 1*time.Minute}
 
-	req.Header.Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("162", err)
@@ -163,14 +165,15 @@ func getAPI(url string) error {
 	defer resp.Body.Close()
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
-		log.Println("Too many request")
 		return errors.New("429 Too Many Requests")
 	}
 
+	mux.Lock()
 	if err := json.NewDecoder(resp.Body).Decode(&priceList); err != nil {
 		log.Println("176", err)
 		return err
 	}
+	mux.Unlock()
 
 
 	return nil
