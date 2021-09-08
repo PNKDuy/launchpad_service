@@ -13,6 +13,7 @@ import (
 	"launchpad_service/model/response"
 	"log"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -133,6 +134,7 @@ func DoEvery(d time.Duration, f func()error) {
 		if err != nil {
 			break
 		}
+		debug.FreeOSMemory()
 	}
 }
 
