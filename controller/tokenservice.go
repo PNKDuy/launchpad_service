@@ -139,7 +139,7 @@ func GetPriceAndUpdateList() error {
 	for _, url := range urls {
 		err := getAPI(url)
 		if err != nil {
-			return err
+			break
 		}
 	}
 	return nil
