@@ -22,30 +22,30 @@ import (
 
 // @BasePath /
 func main() {
-	go controller.DoEvery(2*time.Second, controller.GetPriceAndUpdateList)
+	for{
+		go controller.DoEvery(2*time.Second, controller.GetPriceAndUpdateList)
 
-	server := echo.New()
+		server := echo.New()
 
-	launchpad := server.Group("/launchpad")
-	{
-		launchpad.POST("/create", controller.Create)
-		launchpad.GET("/get", controller.Get)
-		launchpad.GET("/get-by-id/:id", controller.GetById)
-		launchpad.PUT("/update/:id", controller.Update)
-		launchpad.PUT("/deactivate-token/:id", controller.DeactivateToken)
+		launchpad := server.Group("/launchpad")
+		{
+			launchpad.POST("/create", controller.Create)
+			launchpad.GET("/get", controller.Get)
+			launchpad.GET("/get-by-id/:id", controller.GetById)
+			launchpad.PUT("/update/:id", controller.Update)
+			launchpad.PUT("/deactivate-token/:id", controller.DeactivateToken)
+		}
+
+		token := server.Group("/token")
+		{
+			token.GET("/price/:token", controller.GetPrice)
+			token.GET("/price", controller.GetAllPrice)
+			token.GET("/klines/:token/:interval", controller.GetKlines)
+			token.GET("/transaction/:hash", controller.GetTransaction)
+			token.GET("/price-by-currency/:token/:currency", controller.GetPriceByCurrency)
+		}
+
+		server.GET("/swagger/*", echoSwagger.WrapHandler)
+		server.Logger.Fatal(server.Start(":8081"))
 	}
-
-	token := server.Group("/token")
-	{
-		token.GET("/price/:token", controller.GetPrice)
-		token.GET("/price", controller.GetAllPrice)
-		token.GET("/klines/:token/:interval", controller.GetKlines)
-		token.GET("/transaction/:hash", controller.GetTransaction)
-		token.GET("/price-by-currency/:token/:currency", controller.GetPriceByCurrency)
-	}
-
-	server.GET("/swagger/*", echoSwagger.WrapHandler)
-	server.Logger.Fatal(server.Start(":8081"))
-
-	select{}
 }
