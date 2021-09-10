@@ -13,6 +13,7 @@ import (
 	"launchpad_service/model/response"
 	"log"
 	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -136,6 +137,7 @@ func DoEvery(d time.Duration, f func()error) {
 		if err != nil {
 			break
 		}
+		runtime.GC()
 	}
 }
 
@@ -156,17 +158,15 @@ func getAPI(url string) error {
 		return err
 	}
 	client := &http.Client{ Timeout: 5*time.Second}
-
+	
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("162", err)
-		defer resp.Body.Close()
 		return err
 	}
 	defer resp.Body.Close()
 
 	if strings.EqualFold(resp.Status, "429 Too Many Requests") {
-		defer resp.Body.Close()
 		return errors.New("429 Too Many Requests")
 	}
 
