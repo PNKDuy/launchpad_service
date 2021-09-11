@@ -13,7 +13,6 @@ import (
 	"launchpad_service/model/response"
 	"log"
 	"net/http"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -131,13 +130,14 @@ func GetPrice(c echo.Context) error {
 }
 
 func DoEvery(d time.Duration, f func()error) {
-	ticker := time.Tick(d)
-	for range ticker {
-		err := f()
-		if err != nil {
-			break
+	for{
+		ticker := time.Tick(d)
+		for range ticker {
+			err := f()
+			if err != nil {
+				break
+			}
 		}
-		runtime.GC()
 	}
 }
 
@@ -158,7 +158,7 @@ func getAPI(url string) error {
 		return err
 	}
 	client := &http.Client{ Timeout: 5*time.Second}
-	
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("162", err)
