@@ -109,62 +109,6 @@ func GetPriceByCurrency(c echo.Context) error{
 	return c.JSON(http.StatusOK, resList)
 }
 
-// GetPriceAdvance
-// @Summary get price by Token via Binance API
-// @Tags token
-// @Param token path string false "token"
-// @Param currency path string true "currency"
-// @Produce json
-// @Success 200 {object} map[string]string
-// @Failure 400 {HTTPError} HTTPError
-// @Router /token/price-by-advance/{token}/{currency} [GET]
-func GetPriceAdvance(c echo.Context) error{
-	token := strings.ToUpper(c.Param("token"))
-	currency := strings.ToLower(c.Param("currency"))
-	token = strings.ReplaceAll(token, "%2C", ",")
-	if strings.EqualFold(token, "undefined") || strings.EqualFold(token, "{token}") {
-		token = strings.ToUpper(response.DefaultList)
-	}
-
-	coinGeckoUrl := "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies="
-	res, _ := http.Get(coinGeckoUrl + currency)
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	var currencyPrice map[string]interface{}
-	dec := json.NewDecoder(strings.NewReader(string(body)))
-	_ = dec.Decode(&currencyPrice)
-	jq := jsonq.NewQuery(currencyPrice)
-	pairUsdtToken, _ := jq.Float("tether", currency)
-
-	var curList []response.Currency
-	tokenList := strings.Split(token,  ",")
-	for i := range tokenList {
-		for j := range priceList {
-			if strings.EqualFold(tokenList[i] + "USDT", priceList[j].Symbol){
-				tokenUsdtPrice, _ := strconv.ParseFloat(priceList[i].Price, 64)
-				priceChange, _ := strconv.ParseFloat(priceList[i].PriceChange, 64)
-				volume, _ := strconv.ParseFloat(priceList[i].Volume, 64)
-				highPrice, _ := strconv.ParseFloat(priceList[i].HighPrice, 64)
-				lowPrice, _ := strconv.ParseFloat(priceList[i].LowPrice, 64)
-
-				price := pairUsdtToken * tokenUsdtPrice
-				var cur response.Currency
-				cur.Price = price
-				cur.Symbol = tokenList[i]
-				cur.PriceChange= priceChange * pairUsdtToken
-				cur.PriceChangePercent = priceList[i].PriceChangePercent
-				cur.Volume = volume * price
-				cur.HighPrice = highPrice * pairUsdtToken
-				cur.LowPrice = lowPrice * pairUsdtToken
-				curList = append(curList, cur)
-			}
-		}
-
-	}
-	return c.JSON(http.StatusOK, curList)
-}
 // GetPrice
 // @Summary get price by Token via Binance API
 // @Tags token
